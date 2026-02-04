@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>My Skills</h1>
+        <div class="skills-grid">
+            <span class="badge">HTML5</span>
+            <span class="badge">CSS3</span>
+            <span class="badge">JavaScript</span>
+            <span class="badge">Cloudflare</span>
+        </div>
+    </header>
+
+    <main>
+        <h2>My Projects</h2>
+        <div id="project-list" class="grid">
+            <p>Loading projects...</p>
+        </div>
+    </main>
+
+    <script>
+        async function loadProjects() {
+            const res = await fetch('/api/projects');
+            const data = await res.json();
+            const container = document.getElementById('project-list');
+            container.innerHTML = data.map(p => `
+                <div class="card">
+                    <img src="${p.image_url}" alt="${p.title}">
+                    <div class="card-content">
+                        <h3>${p.title}</h3>
+                        <p>${p.description}</p>
+                        <a href="/protected/docs.html?id=${p.id}" class="btn">View Docs 🔒</a>
+                    </div>
+                </div>
+            `).join('');
+        }
+        loadProjects();
+    </script>
+</body>
+</html>
