@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Details</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Gallery Grid */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .gallery-item {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            cursor: zoom-in;
+            transition: transform 0.2s, hover 0.2s;
+            background: #000;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.03);
+            filter: brightness(1.1);
+        }
+
+        /* Lightbox (Real Size Overlay) */
+        .lightbox {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 9999;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            justify-content: center;
+            align-items: center;
+            cursor: zoom-out;
+        }
+
+        .lightbox-content img, 
+        .lightbox-content video {
+            max-width: 95vw;
+            max-height: 95vh;
+            border-radius: 5px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+
+        .project-description {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            color: #cbd5e1;
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="container">
+    <header style="margin-bottom: 30px;">
+        <a href="index.html" style="color: var(--accent); font-weight: bold; text-decoration: none;">← Back to Home</a>
+    </header>
+
+    <div id="project-content">
+        </div>
+
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <div class="lightbox-content" id="lightbox-target">
+            </div>
+    </div>
+
+    <script>
+        // 1. Get Project ID from URL
+        const params = new URLSearchParams(window.location.search);
+        const projectId = params.get('id');
+
+        // 2. Fetch Data from LocalStorage
+        const data = JSON.parse(localStorage.getItem('portfolioData'));
+        const project = data?.projects.find(p => p.id == projectId);
+
+        if (project) {
+            // 3. Build the Gallery HTML
+            let mediaHtml = (project.mediaList || []).map(item => {
+                if (item.type === 'video') {
+                    return `<video src="${item.data}" class="gallery-item" onclick="event.stopPropagation(); openLightbox('${item.data}', 'video')"></video>`;
+                }
+                return `<img src="${item.data}" class="gallery-item" onclick="event.stopPropagation(); openLightbox('${item.data}', 'img')">`;
+            }).join('');
+
+            // 4. Inject Content
+            document.getElementById('project-content').innerHTML = `
+                <h1 style="color: var(--accent); font-size: 2.5rem;">${project.title}</h1>
+                <p style="font-style: italic; color: #94a3b8; margin-bottom: 20px;">${project.desc}</p>
+                
+                <div class="gallery-grid">
+                    ${mediaHtml || '<p>No media uploaded for this project.</p>'}
+                </div>
+
+                <div class="project-description">
+                    ${project.content}
+                </div>
+            `;
+        } else {
+            document.getElementById('project-content').innerHTML = "<h1>Project Not Found</h1>";
+        }
+
+        // --- Lightbox Functions ---
+        function openLightbox(src, type) {
+            const lb = document.getElementById('lightbox');
+            const target = document.getElementById('lightbox-target');
+            
+            if (type === 'video') {
+                target.innerHTML = `<video src="${src}" controls autoplay style="max-width:90vw; max-height:90vh;"></video>`;
+            } else {
+                target.innerHTML = `<img src="${src}" style="max-width:90vw; max-height:90vh;">`;
+            }
+            
+            lb.style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Stop scrolling while open
+        }
+
+        function closeLightbox() {
+            const lb = document.getElementById('lightbox');
+            lb.style.display = 'none';
+            document.getElementById('lightbox-target').innerHTML = ''; // Clear content to stop video audio
+            document.body.style.overflow = 'auto'; // Enable scrolling again
+        }
+    </script>
+</body>
+</html>

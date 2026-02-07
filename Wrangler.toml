@@ -1,0 +1,5 @@
+name = "my-portfolio"
+pages_build_output_dir = "." # Tells Cloudflare your files are in the main folder
+
+[vars]
+IS_LOCAL_TESTING = "false" # We can use this to disable your local prompt() logic
