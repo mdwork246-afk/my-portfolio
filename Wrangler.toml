@@ -4,7 +4,7 @@ pages_build_output_dir = "./"
 [[d1_databases]]
 binding = "DB" # This is how you call it in your code
 database_name = "portfolio_db"
-database_id = "your-database-id-from-cloudflare"
+database_id = "0d6027d8-1d64-405d-a18a-47211ad492dd"
 
 [[r2_buckets]]
 binding = "BUCKET"
