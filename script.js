@@ -1,30 +1,40 @@
-async function loadHome() {
+async function loadPortfolio() {
     const grid = document.getElementById('project-grid');
     
-    // This tells the browser: "Go to the internet and get my projects"
-    const response = await fetch('/api/projects');
-    const projects = await response.json(); 
+    try {
+        // 1. Fetch the data from your Cloudflare API
+        const response = await fetch('/api/projects');
+        const projects = await response.json();
 
-    // This puts the projects onto your screen
-    grid.innerHTML = projects.map(p => {
-        const media = JSON.parse(p.mediaList || "[]");
-        const preview = media.slice(0, 2); 
+        // 2. Clear the grid and render the new data
+        grid.innerHTML = projects.map(p => {
+            // Parse the media list that comes back from the database
+            const media = JSON.parse(p.mediaList || "[]");
+            const preview = media.slice(0, 2); 
 
-        const mediaHtml = preview.map(m => {
-            const fileUrl = `/api/media?key=${m.url}`;
-            return m.type.includes('video') 
-                ? `<video src="${fileUrl}" style="width:48%; height:100px; object-fit:cover;"></video>`
-                : `<img src="${fileUrl}" style="width:48%; height:100px; object-fit:cover;">`;
+            const mediaHtml = preview.map(m => {
+                // This route pulls the image directly from your R2 Bucket
+                const fileUrl = `/api/media?key=${m.url}`;
+                return m.type.includes('video') 
+                    ? `<video src="${fileUrl}" class="preview-media"></video>`
+                    : `<img src="${fileUrl}" class="preview-media">`;
+            }).join('');
+
+            return `
+                <a href="project-detail.html?id=${p.id}" class="card-link">
+                    <div class="card">
+                        <div class="media-preview-container">${mediaHtml}</div>
+                        <h3>${p.title}</h3>
+                        <p>${p.desc}</p>
+                    </div>
+                </a>
+            `;
         }).join('');
 
-        return `
-            <div class="card">
-                <div style="display:flex; gap:5px;">${mediaHtml}</div>
-                <h3>${p.title}</h3>
-                <p>${p.desc}</p>
-            </div>
-        `;
-    }).join('');
+    } catch (err) {
+        grid.innerHTML = "<p>Error loading projects. Please try again later.</p>";
+        console.error("Fetch Error:", err);
+    }
 }
 
-loadHome();
+loadPortfolio();
