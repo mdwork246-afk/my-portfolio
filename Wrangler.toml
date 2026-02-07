@@ -8,4 +8,4 @@ database_id = "0d6027d8-1d64-405d-a18a-47211ad492dd"
 
 [[r2_buckets]]
 binding = "BUCKET"
-bucket_name = "portfolio-media"
+bucket_name = "portfolio-assets"
