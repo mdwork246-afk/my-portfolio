@@ -1,5 +1,11 @@
 name = "my-portfolio"
-pages_build_output_dir = "." # Tells Cloudflare your files are in the main folder
+pages_build_output_dir = "./"
 
-[vars]
-IS_LOCAL_TESTING = "false" # We can use this to disable your local prompt() logic
+[[d1_databases]]
+binding = "DB" # This is how you call it in your code
+database_name = "portfolio_db"
+database_id = "your-database-id-from-cloudflare"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "portfolio-media"
